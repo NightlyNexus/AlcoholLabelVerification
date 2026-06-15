@@ -21,7 +21,7 @@ Advantages
 
 - Automatic failure detection with clear pass/fail output.
 
-- We could remove the TTB processor employee task except when files are unprocessable and provide the feedback directly to the submitting company when the company submits the label image and the form.
+- We could remove the manual TTB processor employee task except when files are unprocessable and provide the feedback directly to the submitting company when the company submits the label image and the form.
 
 - Per-field feedback, so the user (either the TTB employee or the submitting company) knows exactly where the error is.
 

@@ -1,7 +1,18 @@
 TTB Label Verification
 =====================
 
-Run this project with `./gradlew :web:jsBrowserDevelopmentRun` and open [localhost:8080](http://localhost:8080/).
+Use the web app
+--------
+
+<https://nightlynexus.github.io/AlcoholLabelVerification/>
+
+Build from source
+--------
+
+- Ensure you have `java` on your path.
+- Execute `./gradlew :web:jsBrowserDevelopmentRun` within this project’s directory.
+- The first build may take a couple minutes.
+- Open [localhost:8080](http://localhost:8080/).
 
 This is a proof-of-concept webpage for comparing text extracted from an image to text filled into the [TTB F 5100.31 PDF form](https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf). See the [example image](examples/example.png) and the [example completed form](examples/example-f510031.pdf).
 
@@ -20,7 +31,7 @@ Limitations
 
 - In a production version, we are likely retrieving these images and form fields from an internal service/database, rather than from a user’s local machine.
 
-- A production version should have a loading state while processing the image and PDF. This is not high priority now because Tesseract is fast, but a better text extraction model will take a couple seconds.
+- A production version should have a loading state while processing the image and PDF. This is not a high priority now because Tesseract is fast, but a better text extraction model will take a couple seconds.
 
 - With a more accurate text extraction model, we can provide more granular text comparison failure explanations with Google’s [diff-match-patch](https://github.com/google/diff-match-patch).
 

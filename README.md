@@ -1,6 +1,8 @@
 TTB Label Verification
 =====================
 
+This is a proof-of-concept webpage for comparing text extracted from an image to text filled into the [TTB F 5100.31 PDF form](https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf). See the [example image](examples/example.png) and the [example completed form](examples/example-f510031.pdf).
+
 Use the web app
 --------
 
@@ -13,8 +15,6 @@ Build from source
 - Execute `./gradlew :web:jsBrowserDevelopmentRun` within this project’s directory.
 - The first build may take a couple minutes.
 - Open [localhost:8080](http://localhost:8080/).
-
-This is a proof-of-concept webpage for comparing text extracted from an image to text filled into the [TTB F 5100.31 PDF form](https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf). See the [example image](examples/example.png) and the [example completed form](examples/example-f510031.pdf).
 
 Limitations
 --------

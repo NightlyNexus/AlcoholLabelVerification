@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alcohol Label Verification</title>
+  <link rel="shortcut icon" href="shortcut_icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+      *, *::before, *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: #f5f5f3;
+          color: #1a1a18;
+          min-height: 100vh;
+      }
+
+      .page {
+          max-width: 720px;
+          margin: 0 auto;
+          padding: 2.5rem 1.5rem 4rem;
+      }
+
+      /* Header */
+      .header {
+          margin-bottom: 2.5rem;
+      }
+
+      .header h1 {
+          font-size: 22px;
+          font-weight: 500;
+          color: #1a1a18;
+          margin-bottom: 0.4rem;
+      }
+
+      .header p {
+          font-size: 15px;
+          color: #6b6b67;
+          line-height: 1.6;
+      }
+
+      /* Steps */
+      .steps {
+          display: flex;
+          align-items: center;
+          margin-bottom: 2.5rem;
+      }
+
+      .step {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          color: #9b9b97;
+      }
+
+      .step.active {
+          color: #1a1a18;
+      }
+
+      .step.done {
+          color: #2d7a4f;
+      }
+
+      .step-num {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 1px solid #d0d0cb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 500;
+          flex-shrink: 0;
+      }
+
+      .step.active .step-num {
+          background: #1a1a18;
+          color: #fff;
+          border-color: transparent;
+      }
+
+      .step.done .step-num {
+          background: #e6f4ed;
+          border-color: #a8d9bc;
+          color: #2d7a4f;
+      }
+
+      .step-connector {
+          flex: 1;
+          height: 1px;
+          background: #e0e0db;
+          margin: 0 8px;
+          max-width: 40px;
+      }
+
+      /* Upload grid */
+      .upload-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.25rem;
+          margin-bottom: 1.5rem;
+      }
+
+      @media (max-width: 520px) {
+          .upload-grid {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      .upload-card {
+          background: #ffffff;
+          border: 1px solid #e0e0db;
+          border-radius: 12px;
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+      }
+
+      .upload-card-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+      }
+
+      .icon-wrap {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: #f5f5f3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+      }
+
+      .icon-wrap svg {
+          width: 16px;
+          height: 16px;
+          stroke: #6b6b67;
+          fill: none;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+      }
+
+      .upload-card-label span {
+          font-size: 14px;
+          font-weight: 500;
+          color: #1a1a18;
+      }
+
+      .badge {
+          margin-left: auto;
+          font-size: 11px;
+          font-weight: 500;
+          padding: 2px 8px;
+          border-radius: 99px;
+          background: #fdecea;
+          color: #b03020;
+      }
+
+      /* Drop zone */
+      .drop-zone {
+          border: 1.5px dashed #c8c8c3;
+          border-radius: 8px;
+          padding: 2rem 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s;
+          min-height: 140px;
+          position: relative;
+      }
+
+      .drop-zone:hover, .drop-zone.drag-over {
+          background: #f5f5f3;
+          border-color: #a0a09b;
+      }
+
+      .drop-zone input[type="file"] {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          cursor: pointer;
+          width: 100%;
+          height: 100%;
+      }
+
+      .drop-zone svg {
+          width: 28px;
+          height: 28px;
+          stroke: #b0b0ab;
+          fill: none;
+          stroke-width: 1.5;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+      }
+
+      .dz-title {
+          font-size: 13px;
+          font-weight: 500;
+          color: #6b6b67;
+          text-align: center;
+      }
+
+      .dz-sub {
+          font-size: 12px;
+          color: #9b9b97;
+          text-align: center;
+      }
+
+      /* Preview */
+      .preview {
+          display: none;
+          align-items: center;
+          gap: 10px;
+          background: #f5f5f3;
+          border-radius: 8px;
+          padding: 10px 12px;
+      }
+
+      .preview.visible {
+          display: flex;
+      }
+
+      .preview svg {
+          width: 18px;
+          height: 18px;
+          stroke: #6b6b67;
+          fill: none;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          flex-shrink: 0;
+      }
+
+      .preview-name {
+          font-size: 12px;
+          color: #1a1a18;
+          font-weight: 500;
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .preview-remove {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #9b9b97;
+          padding: 2px;
+          display: flex;
+          border-radius: 4px;
+      }
+
+      .preview-remove:hover {
+          color: #b03020;
+      }
+
+      .preview-remove svg {
+          width: 14px;
+          height: 14px;
+      }
+
+      /* Divider */
+      .divider {
+          height: 1px;
+          background: #e0e0db;
+          margin: 0.5rem 0;
+      }
+
+      /* Actions */
+      .actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          flex-wrap: wrap;
+          margin-top: 1rem;
+      }
+
+      .hint {
+          font-size: 13px;
+          color: #9b9b97;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+      }
+
+      .hint svg {
+          width: 14px;
+          height: 14px;
+          stroke: #9b9b97;
+          fill: none;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          flex-shrink: 0;
+      }
+
+      .btn-submit {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 1.25rem;
+          height: 40px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          border: 1px solid #d0d0cb;
+          background: #ffffff;
+          color: #1a1a18;
+          transition: background 0.12s, transform 0.1s;
+      }
+
+      .btn-submit:hover:not(:disabled) {
+          background: #f5f5f3;
+      }
+
+      .btn-submit:active:not(:disabled) {
+          transform: scale(0.98);
+      }
+
+      .btn-submit:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+      }
+
+      .btn-submit.ready {
+          background: #1a1a18;
+          color: #ffffff;
+          border-color: transparent;
+      }
+
+      .btn-submit.ready:hover {
+          background: #2e2e2b;
+      }
+
+      .btn-submit svg {
+          width: 16px;
+          height: 16px;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+      }
+
+      /* Status bar */
+      .status-bar {
+          display: none;
+          align-items: center;
+          gap: 10px;
+          padding: 0.9rem 1.1rem;
+          border-radius: 8px;
+          font-size: 13px;
+          margin-top: 1.25rem;
+      }
+
+      .status-bar.success {
+          display: flex;
+          background: #e6f4ed;
+          color: #2d7a4f;
+          border: 1px solid #a8d9bc;
+      }
+
+      .status-bar.error {
+          display: flex;
+          background: #fdecea;
+          color: #b03020;
+          border: 1px solid #f5b0a0;
+      }
+
+      .status-bar svg {
+          width: 16px;
+          height: 16px;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          flex-shrink: 0;
+      }
+
+      @keyframes spin {
+          to {
+              transform: rotate(360deg);
+          }
+      }
+
+      .spinning {
+          animation: spin 0.8s linear infinite;
+      }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <h1>Alcohol label verification</h1>
+    <p>Upload an image of the label and the completed <a href="https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf">TTB F 5100.31 PDF form</a>. The system will read and compare them
+      automatically.</p>
+  </div>
+
+  <!-- TODO: Batch processing instructions and other UI. -->
+  <!--<div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">1</div>
+      <span>Upload files</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" id="step2">
+      <div class="step-num">2</div>
+      <span>Review</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" id="step3">
+      <div class="step-num">3</div>
+      <span>Compare</span>
+    </div>
+  </div>-->
+
+  <div>
+    <h2 id="result-message-header"></h2>
+    <p id="result-message"></p>
+  </div>
+  <br>
+
+  <div class="upload-grid">
+
+    <!-- Label image -->
+    <div class="upload-card">
+      <div class="upload-card-label">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <path
+                d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+        <span>Label image</span>
+        <span class="badge">Required</span>
+      </div>
+      <div class="drop-zone" id="dz-image" tabindex="0" role="button"
+           aria-label="Upload label image">
+        <input type="file" id="input-image" accept="image/*" aria-label="Choose label image file"/>
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="dz-title">Drop image here</span>
+        <span class="dz-sub">or click to browse</span>
+        <span class="dz-sub">JPG, PNG, HEIC</span>
+      </div>
+      <div class="preview" id="preview-image">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="preview-name" id="preview-image-name"></span>
+        <button class="preview-remove" id="remove-image" aria-label="Remove image">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- PDF form -->
+    <div class="upload-card">
+      <div class="upload-card-label">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <span>Completed <a href="https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf">5100.31 form</a></span>
+        <span class="badge">Required</span>
+      </div>
+      <div class="drop-zone" id="dz-pdf" tabindex="0" role="button" aria-label="Upload PDF form">
+        <input type="file" id="input-pdf" accept="application/pdf"
+               aria-label="Choose PDF form file"/>
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span class="dz-title">Drop PDF here</span>
+        <span class="dz-sub">or click to browse</span>
+        <span class="dz-sub">PDF only</span>
+      </div>
+      <div class="preview" id="preview-pdf">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <span class="preview-name" id="preview-pdf-name"></span>
+        <button class="preview-remove" id="remove-pdf" aria-label="Remove PDF">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="actions">
+    <p class="hint">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Files are processed locally and never uploaded to a server.
+    </p>
+    <button class="btn-submit" id="btn-submit" disabled>
+      <svg viewBox="0 0 24 24">
+        <polyline points="17 1 21 5 17 9"/>
+        <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+        <polyline points="7 23 3 19 7 15"/>
+        <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+      </svg>
+      Compare documents
+    </button>
+  </div>
+
+  <div class="status-bar" id="status-bar" role="alert" aria-live="polite">
+    <svg id="status-icon" viewBox="0 0 24 24">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span id="status-msg"></span>
+  </div>
+</div>
+
+<!-- Script for simple UI manipulating. -->
+<script>
+    const inputImage = document.getElementById('input-image');
+    const inputPdf = document.getElementById('input-pdf');
+    const previewImage = document.getElementById('preview-image');
+    const previewPdf = document.getElementById('preview-pdf');
+    const previewImageName = document.getElementById('preview-image-name');
+    const previewPdfName = document.getElementById('preview-pdf-name');
+    const removeImage = document.getElementById('remove-image');
+    const removePdf = document.getElementById('remove-pdf');
+    const btnSubmit = document.getElementById('btn-submit');
+    const statusBar = document.getElementById('status-bar');
+    // TODO: Remove these bottom statuses? Use them for batch uploading UI?
+    const statusMsg = document.getElementById('status-msg');
+    const statusIcon = document.getElementById('status-icon');
+    const dzImage = document.getElementById('dz-image');
+    const dzPdf = document.getElementById('dz-pdf');
+
+    let hasImage = false, hasPdf = false;
+
+    // TODO: Remove this button? Use it for confirming batch processing start?
+    btnSubmit.style.display = "none";
+
+    function updateSubmit() {
+        const ready = hasImage && hasPdf;
+        btnSubmit.disabled = !ready;
+        btnSubmit.classList.toggle('ready', ready);
+    }
+
+    function setImageFile(file) {
+        if (!file) return;
+        previewImageName.textContent = file.name;
+        previewImage.classList.add('visible');
+        dzImage.querySelector('.dz-title').textContent = 'Image selected';
+        hasImage = true;
+        updateSubmit();
+        statusBar.className = 'status-bar';
+    }
+
+    function setPdfFile(file) {
+        if (!file) return;
+        previewPdfName.textContent = file.name;
+        previewPdf.classList.add('visible');
+        dzPdf.querySelector('.dz-title').textContent = 'PDF selected';
+        hasPdf = true;
+        updateSubmit();
+        statusBar.className = 'status-bar';
+    }
+
+    function removeImageFile() {
+        inputImage.value = '';
+        previewImage.classList.remove('visible');
+        dzImage.querySelector('.dz-title').textContent = 'Drop image here';
+        hasImage = false;
+        updateSubmit();
+    }
+
+    function removePdfFile() {
+        inputPdf.value = '';
+        previewPdf.classList.remove('visible');
+        dzPdf.querySelector('.dz-title').textContent = 'Drop PDF here';
+        hasPdf = false;
+        updateSubmit();
+    }
+
+    inputImage.addEventListener('change', () => setImageFile(inputImage.files[0]));
+    inputPdf.addEventListener('change', () => setPdfFile(inputPdf.files[0]));
+    removeImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeImageFile();
+    });
+    removePdf.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removePdfFile('pdf');
+    });
+
+    [dzImage, dzPdf].forEach((dz, i) => {
+        dz.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dz.classList.add('drag-over');
+        });
+        dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+        dz.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dz.classList.remove('drag-over');
+            if (i === 0) {
+                setImageFile(e.dataTransfer.files[0])
+            } else {
+                setPdfFile(e.dataTransfer.files[0]);
+            }
+        });
+        dz.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dz.querySelector('input').click();
+            }
+        });
+    });
+</script>
+<!-- Generated Kotlin script. -->
+<script src="web.js"></script>
+</body>
+</html>

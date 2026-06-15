@@ -16,12 +16,23 @@ Build from source
 - The first build may take a couple minutes.
 - Open [localhost:8080](http://localhost:8080/).
 
+Advantages
+--------
+
+- Automatic failure detection with clear pass/fail output.
+
+- We could remove the TTB processor employee task except when files are completely unprocessable and provide the feedback directly to the submitting company when the company submits the label image and the form.
+
+- Per-field feedback, so the user (either the TTB employee or the submitting company) knows exactly where the error is.
+
+- This comparison task can run on its own, so, even if we later use a very accurate text extraction model that takes a long time to process images, the employee does not have babysit the application. Batch uploads could also run overnight.
+
 Limitations
 --------
 
-- This webpage only uses local JavaScript in the browser on the device. The text extraction uses [Tesseract.js](https://github.com/naptha/tesseract.js/) due to reported restrictions on cloud APIs. A future version could use external services or an internal machine on our network with a good GPU running better models for much beter text extraction results.
+- This webpage only uses local JavaScript in the browser on the device. The text extraction uses [Tesseract.js](https://github.com/naptha/tesseract.js/) due to reported restrictions on cloud APIs. A future version could use external services or an internal machine on our network with a good GPU running better models for much better text extraction results.
 
-- This webpage has four requirements of the completed PDF form:
+- This webpage has four requirements of the completed [TTB F 5100.31 PDF form]:
   - Field "6" must have the brand name.
   - Field "8" must have the name and address of the bottler and, if imported, must end with a comma followed by the country of origin.
   - Field "9" must have the percentage of alcohol (e.g. "10%") or be empty if exempt.

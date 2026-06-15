@@ -27,6 +27,8 @@ Advantages
 
 - This comparison task can run on its own, so, even if we later use a very accurate text extraction model that takes a long time to process images, the employee does not have babysit the application. Batch uploads could also run overnight.
 
+- All processing is currently local and offline in the web page. No sensitive information goes to any cloud APIs or external vendors.
+
 Limitations
 --------
 

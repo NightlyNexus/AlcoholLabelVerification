@@ -34,7 +34,7 @@ Limitations
 
 - This webpage only uses local JavaScript in the browser on the device. The text extraction uses [Tesseract.js](https://github.com/naptha/tesseract.js/) due to reported restrictions on cloud APIs. A future version could use external services or an internal machine on our network with a good GPU running better models for much better text extraction results.
 
-- This webpage has four requirements of the completed [TTB F 5100.31 PDF form]:
+- This webpage has four requirements of the completed [TTB F 5100.31 PDF form](https://www.ttb.gov/system/files/images/pdfs/forms/f510031.pdf):
   - Field "6" must have the brand name.
   - Field "8" must have the name and address of the bottler and, if imported, must end with a comma followed by the country of origin.
   - Field "9" must have the percentage of alcohol (e.g. "10%") or be empty if exempt.

@@ -14,6 +14,9 @@ fun main() {
   WebApp(document)
 }
 
+@JsName("removePdfFile")
+external fun removePdfFileFromUi()
+
 private class WebApp(
   document: Document
 ) {
@@ -76,6 +79,7 @@ private class WebApp(
       val ttbForm = readTtbFormLabelInformation(pdfFile)
       withContext(Dispatchers.Main) {
         if (ttbForm == null) {
+          removePdfFileFromUi()
           postInvalidFormResultMessage()
         } else {
           this@WebApp.ttbForm = ttbForm
